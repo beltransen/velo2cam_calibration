@@ -1,0 +1,11 @@
+<launch>
+
+	<arg name="stdout" default="screen" />
+
+	<node pkg="velo2cam_calibration" type="velo2cam_calibration" name="velo2cam_calibration" output="screen">
+		<remap from="~cloud1" to="/laser_pattern/centers_cloud"/>
+		<remap from="~cloud2" to="/mono_pattern/centers_cloud"/>
+		<param name="radius" value="0.12"/>
+		<param name="centers_distance" value="0.3"/>
+	</node>
+</launch>

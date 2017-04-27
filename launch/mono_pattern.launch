@@ -1,0 +1,10 @@
+<launch>
+
+  <arg name="stdout" default="screen" />
+
+
+  <!-- Our node -->
+	<node pkg="velo2cam_calibration" type="mono_pattern" name="mono_pattern" output="screen"/>
+    
+  <node pkg="tf" type="static_transform_publisher" name="stereo_ros_tf" args="0 0 0 -1.57079632679 0 -1.57079632679 stereo stereo_camera 10"/>
+</launch>

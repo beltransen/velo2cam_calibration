@@ -1,0 +1,10 @@
+<launch>
+	<node pkg="velo2cam_calibration" type="pcl_projection" name="pcl_projection" output="screen">
+		<remap from="~pointcloud" to="/velodyne_points"/>
+		<remap from="~camera_info" to="/stereo_camera/left/camera_info"/>
+		<remap from="~image" to="/stereo_camera/left/image_rect_color"/>
+	</node>
+
+	<!-- <node pkg="tf" type="static_transform_publisher" name="broadcaster" args="-0.1 -0.4 -0.8 0 0 0 1 stereo_camera velodyne 100" /> -->
+
+</launch>

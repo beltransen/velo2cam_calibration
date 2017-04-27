@@ -1,0 +1,19 @@
+<launch>
+
+	<arg name="stdout" default="screen" />
+
+	<!-- <include file="$(find velo2cam_calibration)/launch/stereo_pattern.launch" />
+	<include file="$(find velo2cam_calibration)/launch/laser_pattern.launch" /> -->
+
+	<!--node pkg="tf" type="static_transform_publisher" name="link1_broadcaster" args="-0.2 -0.2 -0.8 0 0 1.57 stereo_camera velodyne 100" /-->
+	<!-- <node pkg="tf" type="static_transform_publisher" name="link1_broadcaster" args="0.003 0.442 0.789 0.034 0.052 0.008 0.998 velodyne stereo_camera 100" /> -->
+
+	<node pkg="velo2cam_calibration" type="velo2cam_calibration" name="velo2cam_calibration" output="screen">
+		<remap from="~cloud1" to="/laser_pattern/centers_cloud"/>
+		<remap from="~cloud2" to="/stereo_pattern/centers_cloud"/>
+		<remap from="~cloud3" to="/velodyne_points"/>
+		<param name="radius" value="0.12"/>
+		<param name="centers_distance" value="0.3"/>
+		<param name="sync_iterations" value="true"/>
+	</node>
+</launch>

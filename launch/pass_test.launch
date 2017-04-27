@@ -1,0 +1,15 @@
+<launch>
+  <arg name="stdout" default="screen" />
+  <node pkg="nodelet" type="nodelet" name="pass_through_range" args="load pcl/PassThrough pcl_manager" output="$(arg stdout)">
+    <remap from="~input" to="/laser_pattern/transf_velodyne" />
+    <remap from="~output" to="/test" />
+    <rosparam>
+      filter_field_name: range
+      filter_limit_min: 1.5
+      filter_limit_max: 3
+      filter_limit_negative: False
+      max_queue_size: 1
+      keep_organized: False
+    </rosparam>
+  </node>
+</launch>

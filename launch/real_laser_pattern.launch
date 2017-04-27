@@ -1,0 +1,47 @@
+<launch>
+
+  <arg name="stdout" default="screen" />
+
+  <!-- PCL PREPROCESSING -->
+  <!-- PCL nodelet manager -->
+  <node pkg="nodelet" type="nodelet" name="pcl_manager" args="manager" output="$(arg stdout)"/>
+
+  <node pkg="nodelet" type="nodelet" name="pass_through_z_velo" args="load pcl/PassThrough pcl_manager" output="$(arg stdout)">
+    <remap from="~input" to="/velodyne_points" />
+    <remap from="~output" to="/velodyne/z_filtered" />
+    <rosparam>
+      filter_field_name: y
+      filter_limit_min: -1.5
+      filter_limit_max: 1.5
+      filter_limit_negative: False
+      max_queue_size: 1
+      keep_organized: False
+    </rosparam>
+  </node>
+
+  <node pkg="nodelet" type="nodelet" name="pass_through_x_velo" args="load pcl/PassThrough pcl_manager" output="$(arg stdout)">
+    <remap from="~input" to="/velodyne/z_filtered" />
+    <remap from="~output" to="/velodyne/xy_filtered" />
+    <rosparam>
+      filter_field_name: x
+      filter_limit_min: 1
+      filter_limit_max: 15
+      filter_limit_negative: False
+      max_queue_size: 1
+      keep_organized: False
+    </rosparam>
+  </node>
+  <node pkg="velo2cam_calibration" type="laser_pattern" name="laser_pattern" output="screen">
+    <remap from="~cloud1" to="/velodyne/xy_filtered"/>
+    <rosparam>
+      x: 0
+      y: 0
+      z: 1
+      angle_threshold: 0.55
+      circle_radius: 0.12
+      passthrough_radius_min: 1.5
+      passthrough_radius_max: 5.5
+    </rosparam>
+  </node>
+
+</launch>

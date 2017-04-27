@@ -1,0 +1,139 @@
+<launch>
+
+  <arg name="stdout" default="screen" />
+
+  <!-- Disparity -->
+  <node pkg="disparity" type="disparity_node" name="disparity" output="screen">
+    <param name="num_disp" value="128"/>
+    <param name="sgbmWinSize" value="3"/>
+    <param name="method" value="2"/>
+    <param name="disparity8" value="true"/>
+    <param name="uvdisparity" value="false"/>
+    <param name="freeobsmask" value="false"/>
+    <param name="force_cpu_matching" value="false"/>
+    <param name="force_cpu_uv" value="false"/>
+    <remap from="stereo_camera/left/image_rect" to="stereo_camera/left/image_rect_color"/>
+    <remap from="stereo_camera/right/image_rect" to="stereo_camera/right/image_rect_color"/>
+  </node>
+
+  <!-- Full disparity to pointcloud -->
+  <group ns="stereo_camera">
+    <!-- Manager + nodelet -->
+    <node pkg="nodelet" type="nodelet" name="pointclouder_manager_full" args="manager"/>
+    <node pkg="nodelet" type="nodelet" name="pointclouder_full"
+      args="load stereo_image_proc/point_cloud2 pointclouder_manager_full _queue_size:=100">
+    </node>
+  </group>
+
+  <!-- Edge detection -->
+  <node name="edge_detection" pkg="opencv_apps" type="edge_detection" output="$(arg stdout)" >
+    <remap from="image" to="/stereo_camera/left/image_rect_color" />
+    <param name="use_camera_info" value="false" />
+    <param name="debug_view" value="false" />
+    <param name="edge_type" value="0" />
+    <param name="canny_threshold1" value="100" />
+    <param name="canny_threshold2" value="200" />
+    <param name="apertureSize" value="3" />
+    <param name="apply_blur_pre" value="true" />
+    <param name="postBlurSize" value="13" />
+    <param name="postBlurSigma" value="3.2" />
+    <param name="apply_blur_post" value="false" />
+    <param name="L2gradient" value="false" />
+  </node>
+
+  <!-- Masked disparity - only edges -->
+  <node name="disp_masker" pkg="pcl_utils" type="disp_masker" output="$(arg stdout)" >
+    <remap from="~image" to="stereo_camera/disparity" />
+    <remap from="~mask" to="edge_detection/image" />
+    <remap from="~output" to="stereo_camera/edges_disparity" />
+    <param name="edges_threshold" value="32" />
+  </node>
+
+  <!-- Masked disparity to pointcloud -->
+  <group ns="stereo_camera">
+    <!-- Manager + nodelet -->
+    <node pkg="nodelet" type="nodelet" name="pointclouder_manager_edges" args="manager"/>
+    <node pkg="nodelet" type="nodelet" name="pointclouder_edges"
+      args="load stereo_image_proc/point_cloud2 pointclouder_manager_edges _queue_size:=100"
+      respawn="true">
+      <remap from="disparity" to="edges_disparity"/>
+      <remap from="points2" to="edge_points2"/>
+    </node>
+  </group>
+
+  <!-- PCL generic nodelet manager -->
+  <node pkg="nodelet" type="nodelet" name="stereo_pcl_manager" args="manager" output="$(arg stdout)"/>
+
+  <!-- Masked cloud pass through -->
+  <node pkg="nodelet" type="nodelet" name="edges_pass_through_z" args="load pcl/PassThrough stereo_pcl_manager" output="$(arg stdout)">
+    <remap from="~input" to="/stereo_camera/edge_points2" />
+    <remap from="~output" to="/stereo_camera/edge_z_filtered_cloud" />
+    <rosparam>
+      filter_field_name: z
+      filter_limit_min: 2
+      filter_limit_max: 4
+      filter_limit_negative: False
+      max_queue_size: 1
+      keep_organized: False
+    </rosparam>
+  </node>
+
+  <!-- Full cloud pass through -->
+  <node pkg="nodelet" type="nodelet" name="full_pass_through_z" args="load pcl/PassThrough stereo_pcl_manager" output="$(arg stdout)">
+    <remap from="~input" to="/stereo_camera/points2" />
+    <remap from="~output" to="/stereo_camera/z_filtered_cloud" />
+    <rosparam>
+      filter_field_name: z
+      filter_limit_min: 2
+      filter_limit_max: 4
+      filter_limit_negative: False
+      max_queue_size: 1
+      keep_organized: False
+    </rosparam>
+  </node>
+
+  <!-- Plane finding on the masked cloud -->
+  <node pkg="calibration_from_plane" type="plane_segmentation" name="planar_segmentation" output="$(arg stdout)" required="true">
+    <remap from="~input"   to="/stereo_camera/z_filtered_cloud" />
+    <rosparam>
+      segmentation_type: 1
+      axis: [0.0, 1.0, 0.0]
+      threshold: 0.01
+      eps_angle: 0.6
+    </rosparam>
+  </node>
+
+  <!-- Extract plane cloud -->
+  <node pkg="nodelet" type="nodelet" name="extract_plane_indices" args="load pcl/ExtractIndices stereo_pcl_manager" output="screen">
+    <remap from="~input"   to="/stereo_camera/z_filtered_cloud" />
+    <remap from="~indices" to="/planar_segmentation/inliers" />
+    <rosparam>
+      negative: false
+    </rosparam>
+  </node>
+
+  <!-- Our node -->
+	<node pkg="velo2cam_calibration" type="stereo_pattern" name="stereo_pattern" output="screen">
+		<remap from="~cloud2" to="/stereo_camera/edge_z_filtered_cloud"/>
+    <remap from="~cam_plane_coeffs" to="/planar_segmentation/model"/>
+		<param name="~min_line_inliers" value="200"/>
+    <param name="~min_plane_normal_z" value="0.8"/>
+    <param name="~line_threshold" value="0.1"/>
+    <param name="~plane_distance_inliers" value="0.1"/>
+    <param name="~min_distance_between_borders_x" value="0.7"/>
+    <param name="~min_distance_between_borders_y" value="1.0"/>
+    <param name="~min_line_inliers" value="900"/>    
+	</node>
+
+  <!-- Extract circles cloud -->
+  <node pkg="nodelet" type="nodelet" name="extract_circle_indices" args="load pcl/ExtractIndices stereo_pcl_manager" output="screen">
+    <remap from="~input"   to="/velo2cam_calibration/z_filtered_cloud" />-
+    <remap from="~indices" to="/velo2cam_calibration/inliers" />
+    <rosparam>
+      negative: false
+    </rosparam>
+  </node>
+
+  <!-- <node pkg="tf2_ros" type="static_transform_publisher" name="stereo_ros_tf2" args="0 0 0 1.57079632679 -1.57079632679 0 stereo_camera stereo" /> -->
+  <node pkg="tf" type="static_transform_publisher" name="stereo_ros_tf" args="0 0 0 -1.57079632679 0 -1.57079632679 stereo stereo_camera 100"/>
+</launch>

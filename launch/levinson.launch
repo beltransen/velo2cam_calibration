@@ -1,0 +1,13 @@
+<launch>
+
+	<arg name="stdout" default="screen" />
+
+	<node pkg="velo2cam_calibration" type="levinson" name="levinson" output="screen">
+		<param name="~listen_to_tf" value="false" />
+		<remap from="~image" to="/stereo_camera/left/image_rect_color"/>
+		<remap from="~camera_info" to="/stereo_camera/left/camera_info"/>
+		<remap from="~cloud" to="/velodyne_points"/>
+	</node>
+
+	<!--node pkg="tf" type="static_transform_publisher" name="broadcaster" args="-2 -0.4 -0.8 0 0 0 1 stereo_camera velodyne 100" /-->
+</launch>

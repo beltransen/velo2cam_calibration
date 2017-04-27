@@ -1,0 +1,31 @@
+<launch>
+
+	<arg name="stdout" default="screen" />
+
+	<!-- Edge detection -->
+	<node name="edge_detection" pkg="opencv_apps" type="edge_detection" output="$(arg stdout)" >
+		<remap from="image" to="/stereo_camera/left/image_rect_color" />
+		<param name="use_camera_info" value="false" />
+		<param name="debug_view" value="false" />
+		<param name="edge_type" value="0" />
+		<param name="canny_threshold1" value="100" />
+		<param name="canny_threshold2" value="200" />
+		<param name="apertureSize" value="3" />
+		<param name="apply_blur_pre" value="true" />
+		<param name="postBlurSize" value="13" />
+		<param name="postBlurSigma" value="3.2" />
+		<param name="apply_blur_post" value="false" />
+		<param name="L2gradient" value="false" />
+	</node>
+
+	<node pkg="velo2cam_calibration" type="levinson" name="levinson" output="screen">
+		<!-- <remap from="~image" to="/stereo_camera/left/image_rect_color"/> -->
+		<param name="listen_to_tf" value="false"/>
+		<!-- <remap from="~image" to="edge_detection/image"/> -->
+		<remap from="~image" to="/stereo_camera/left/image_rect_color"/>
+		<remap from="~camera_info" to="/stereo_camera/left/camera_info"/>
+		<remap from="~cloud" to="/velodyne_points"/>
+	</node>
+
+	<!-- <node pkg="tf" type="static_transform_publisher" name="broadcaster" args="-2 -0.4 -0.8 0 0 0 1 stereo_camera velodyne 100" /> -->
+</launch>
