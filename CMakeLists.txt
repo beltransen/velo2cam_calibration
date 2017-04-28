@@ -13,11 +13,11 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   tf
   tf_conversions
+  dynamic_reconfigure
   # geometry_msgs
   # tf2
   # tf2_ros
   # tf2_sensor_msgs
-  dynamic_reconfigure
 )
 
 find_package(OpenMP REQUIRED)
@@ -98,10 +98,10 @@ target_compile_options(pcl_projection PRIVATE ${OpenMP_FLAGS})
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(laser_pattern ${catkin_EXPORTED_TARGETS} velo2cam_calibration_generate_messages_cpp)
-add_dependencies(stereo_pattern ${catkin_EXPORTED_TARGETS} velo2cam_calibration_generate_messages_cpp)
+add_dependencies(laser_pattern ${catkin_EXPORTED_TARGETS} velo2cam_calibration_generate_messages_cpp ${PROJECT_NAME}_gencfg)
+add_dependencies(stereo_pattern ${catkin_EXPORTED_TARGETS} velo2cam_calibration_generate_messages_cpp ${PROJECT_NAME}_gencfg)
 #add_dependencies(mono_pattern ${catkin_EXPORTED_TARGETS})
-add_dependencies(velo2cam_calibration ${catkin_EXPORTED_TARGETS} velo2cam_calibration_generate_messages_cpp)
+add_dependencies(velo2cam_calibration ${catkin_EXPORTED_TARGETS} velo2cam_calibration_generate_messages_cpp ${PROJECT_NAME}_gencfg)
 add_dependencies(levinson ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
