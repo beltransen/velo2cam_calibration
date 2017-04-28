@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(velo2cam_calibration)
 
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
 ## Find catkin macros and libraries
 find_package(catkin REQUIRED COMPONENTS
   cv_bridge
@@ -20,7 +22,7 @@ find_package(catkin REQUIRED COMPONENTS
   # tf2_sensor_msgs
 )
 
-find_package(OpenMP REQUIRED)
+find_package(OpenMP)
 if(OPENMP_FOUND)
   message(STATUS "OPENMP FOUND")
   set(OpenMP_FLAGS ${OpenMP_CXX_FLAGS})  # or if you use C: ${OpenMP_C_FLAGS}
@@ -55,12 +57,16 @@ generate_messages(
 ###################################
 ## catkin specific configuration ##
 ###################################
-catkin_package(
-  INCLUDE_DIRS include
-#  LIBRARIES obstacle_detection
-#  CATKIN_DEPENDS cv_bridge image_transport message_filters roscpp sensor_msgs std_msgs
-  DEPENDS OpenMP
-)
+if(OPENMP_FOUND)
+    catkin_package(
+      INCLUDE_DIRS include
+      DEPENDS OpenMP
+    )
+else()
+    catkin_package(
+      INCLUDE_DIRS include
+    )
+endif()
 
 ###########
 ## Build ##
@@ -82,7 +88,7 @@ link_directories(
 
 add_definitions(
   ${PCL_DEFINITIONS}
-  -std=c++11
+  #-std=c++11
 )
 
 ## Declare a cpp executable
