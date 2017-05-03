@@ -1,4 +1,4 @@
-#define PCL_NO_PRECOMPILE
+#define PCL_NO_PRECOMPILE 
 
 #include "velo2cam_utils.h"
 #include <ros/ros.h>
@@ -65,8 +65,6 @@ void edges_pointcloud(pcl::PointCloud<Velodyne::Point>::Ptr pc){
       Velodyne::Point *prev, *succ;
       if (ring->empty()) continue;
 
-      float last_intensity = (*ring->begin())->intensity;
-      float new_intensity;
       (*ring->begin())->intensity = 0;
       (*(ring->end() - 1))->intensity = 0;
       for (vector<Velodyne::Point*>::iterator pt = ring->begin() + 1; pt < ring->end() - 1; pt++){
@@ -603,8 +601,6 @@ int main(int argc, char **argv){
 
    step_ = 0;
 
-   time_t t = time(0);   // get time now
-   struct tm * now = localtime( & t );
    ostringstream os;
    os << getenv("HOME") << "/" << "levinson_" << currentDateTime() << ".csv" ;
 

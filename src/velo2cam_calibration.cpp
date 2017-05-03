@@ -360,7 +360,7 @@ void stereo_callback(velo2cam_calibration::ClusterCentroids::ConstPtr image_cent
 
     tf::Transform inverse = transform.inverse();
     double roll, pitch, yaw;
-    double xt = inverse.getOrigin().getX(), yt = inverse.getOrigin().getY(), zt = inverse.getOrigin().getZ();
+    //double xt = inverse.getOrigin().getX(), yt = inverse.getOrigin().getY(), zt = inverse.getOrigin().getZ();
     inverse.getBasis().getRPY(roll, pitch, yaw);
 
     // ROS_WARN("-- CALIBRATION --");

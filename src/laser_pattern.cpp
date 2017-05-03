@@ -1,4 +1,4 @@
-#define PCL_NO_PRECOMPILE
+#define PCL_NO_PRECOMPILE 
 #define DEBUG 1
 
 #include <ros/ros.h>
@@ -113,8 +113,6 @@ void callback(const PointCloud2::ConstPtr& laser_cloud){
         Velodyne::Point *prev, *succ;
         if (ring->empty()) continue;
 
-        float last_intensity = (*ring->begin())->intensity;
-        float new_intensity;
         (*ring->begin())->intensity = 0;
         (*(ring->end() - 1))->intensity = 0;
         for (vector<Velodyne::Point*>::iterator pt = ring->begin() + 1; pt < ring->end() - 1; pt++){
@@ -418,12 +416,12 @@ void callback(const PointCloud2::ConstPtr& laser_cloud){
     m_coeff.header = laser_cloud->header;
     coeff_pub.publish(m_coeff);
 
-    static bool has_centers = false;
+    //static bool has_centers = false;
 
     ROS_WARN("[Laser] %d/%d frames: %ld pts in cloud", clouds_used_, clouds_proc_, cumulative_cloud->points.size());
     //  if(nFrames > NUMBER_OF_FRAMES){
 
-    has_centers = true;
+    // has_centers = true;
 
     // Create cloud for publishing centers
     pcl::PointCloud<pcl::PointXYZ>::Ptr centers_cloud(new pcl::PointCloud<pcl::PointXYZ>);
