@@ -1,4 +1,4 @@
-#define PCL_NO_PRECOMPILE
+#define PCL_NO_PRECOMPILE 
 #define DEBUG 1
 
 #include "velo2cam_calibration/ClusterCentroids.h"
