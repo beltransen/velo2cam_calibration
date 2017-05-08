@@ -1,4 +1,4 @@
-# velo2cam_calibration
+# velo2cam_calibration [![Build Status](http://build.ros.org/job/Kdev__velo2cam_calibration__ubuntu_xenial_amd64/8/badge/icon)](http://build.ros.org/job/Kdev__velo2cam_calibration__ubuntu_xenial_amd64/8/)
 Automatic Calibration algorithm for Lidar-Stereo camera. ROS Package.
 
 ## Package summary ###
