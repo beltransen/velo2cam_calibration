@@ -2,7 +2,8 @@
 Automatic Calibration algorithm for Lidar-Stereo camera. ROS Package.
 
 ## Package summary ###
-The *velo2cam_calibration* package implements the algorithm for calibrating relative position between a laser (velodyne) and a stereo camera. 
+The *velo2cam_calibration* package implements an Automatic Calibration algorithm for Lidar-Stereo camera setups.
+Package developed at Intelligent Systems Laboratory (http://www.uc3m.es/islab), Universidad Carlos III de Madrid.
 
 ![gazebo screenshot](screenshots/velo2cam_calibration_setup.png)
 
@@ -10,7 +11,7 @@ The *velo2cam_calibration* package implements the algorithm for calibrating rela
 
 ## 2. Nodes ##
 ### 2.1 stereo_pattern ###
-#### Subscribed Topics #### 
+#### Subscribed Topics ####
 cloud1 (sensor_msgs/PointCloud2)
    Laser pointcloud
 #### Published ####
@@ -28,3 +29,18 @@ cloud2 (velo2cam_calibration::ClusterCentroids)
 #### Published Topics ####
 tf relating both sensors
 #### Parameters ####
+
+## 3. Usage ##
+Some sample .launch files are provided in this package. The simplest way to launch the algorithm is by running the three main ROS nodes as follows:
+
+```roslaunch velo2cam_calibration lidar_pattern.launch```
+
+```roslaunch velo2cam_calibration stereo_pattern.launch```
+
+```roslaunch velo2cam_calibration velo2cam_calibration.launch```
+
+Note: In order to test the algorithm with a proper ground truth, a simulator environment in Gazebo is provided at *https://github.com/beltransen/velo2cam_gazebo*
+
+## 4. Citation ##
+Paper *"Automatic Extrinsic Calibration for Lidar-Stereo Vehicle Sensor Setups"* submitted to *International Conference on Intelligent Transportation Systems (ITSC) 2017*.
+For citation details, please contact Jorge Beltran (jbeltran AT ing.uc3m DOT es) or Carlos Guindel (cguindel AT ing.uc3m DOT es).
