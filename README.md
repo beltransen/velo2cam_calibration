@@ -7,19 +7,19 @@ Package developed at [Intelligent Systems Laboratory](http://www.uc3m.es/islab),
 ![gazebo screenshot](screenshots/velo2cam_calibration_setup.png)
 
 # Nodes #
-## 1.1 stereo_pattern ##
+## stereo_pattern ##
 ### Subscribed Topics ###
 cloud1 (sensor_msgs/PointCloud2)
    Laser pointcloud
 ### Published ###
 ### Parameters ###
-## 1.2 laser_pattern ##
+## laser_pattern ##
 ### Subscribed Topics ###
 cloud1 (sensor_msgs/PointCloud2)
    Laser pointcloud
 ### Published Topics ###
 ### Parameters ###
-## 1.3 velo2cam_calibration ##
+## velo2cam_calibration ##
 ### Subscribed Topics ###
 cloud1 (velo2cam_calibration::ClusterCentroids)
 cloud2 (velo2cam_calibration::ClusterCentroids)
