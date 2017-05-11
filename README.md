@@ -39,6 +39,5 @@ Some sample .launch files are provided in this package. The simplest way to laun
 Note: In order to test the algorithm with a proper ground truth, a simulator environment in Gazebo is provided [here](https://github.com/beltransen/velo2cam_gazebo)
 
 # Citation #
-[1] *"Automatic Extrinsic Calibration for Lidar-Stereo Vehicle Sensor Setups"* submitted to *International Conference on Intelligent Transportation Systems (ITSC) 2017*.
-
-For citation details, please contact Jorge Beltran (jbeltran AT ing.uc3m DOT es) or Carlos Guindel (cguindel AT ing.uc3m DOT es).
+[1] Guindel, C., Beltrán, J., Martín, D. and García, F. (2017). Automatic Extrinsic Calibration for Lidar-Stereo Vehicle Sensor Setups. 
+\* Preprint submitted to *IEEE International Conference on Intelligent Transportation Systems 2017*.
