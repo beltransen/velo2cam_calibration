@@ -30,7 +30,7 @@ tf relating both sensors
 # Usage #
 Some sample .launch files are provided in this package. The simplest way to launch the algorithm is by running the three main ROS nodes as follows:
 
-```roslaunch velo2cam_calibration lidar_pattern.launch```
+```roslaunch velo2cam_calibration laser_pattern.launch```
 
 ```roslaunch velo2cam_calibration stereo_pattern.launch```
 
