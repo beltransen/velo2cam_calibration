@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   pcl_ros
   sensor_msgs
   std_msgs
+  stereo_msgs
   tf
   tf_conversions
   dynamic_reconfigure
