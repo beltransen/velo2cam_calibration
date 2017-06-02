@@ -36,6 +36,7 @@ find_package(PCL 1.7 REQUIRED)
 generate_dynamic_reconfigure_options(
   cfg/Laser.cfg
   cfg/Camera.cfg
+  cfg/Plane.cfg
 )
 
 ################################################
@@ -92,6 +93,8 @@ add_executable(velo2cam_calibration src/velo2cam_calibration.cpp lib/tinyxml2.cp
 add_executable(pcl_coloring src/pcl_coloring.cpp)
 add_executable(pcl_projection src/pcl_projection.cpp)
 add_executable(levinson src/levinson.cpp)
+add_executable(v2c_plane_segmentation src/plane.cpp)
+add_executable(v2c_disp_masker src/disp_masker.cpp)
 
 target_compile_options(pcl_projection PRIVATE ${OpenMP_FLAGS})
 
@@ -102,6 +105,7 @@ add_dependencies(stereo_pattern ${catkin_EXPORTED_TARGETS} velo2cam_calibration_
 #add_dependencies(mono_pattern ${catkin_EXPORTED_TARGETS})
 add_dependencies(velo2cam_calibration ${catkin_EXPORTED_TARGETS} velo2cam_calibration_generate_messages_cpp ${PROJECT_NAME}_gencfg)
 add_dependencies(levinson ${catkin_EXPORTED_TARGETS})
+add_dependencies(v2c_plane_segmentation ${PROJECT_NAME}_gencfg)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(stereo_pattern
@@ -137,4 +141,12 @@ target_link_libraries(levinson
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
   ${PCL_LIBRARIES}
+)
+target_link_libraries(v2c_plane_segmentation
+  ${catkin_LIBRARIES}
+  ${PCL_LIBRARIES}
+)
+target_link_libraries(v2c_disp_masker
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
 )

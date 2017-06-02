@@ -2,26 +2,27 @@
 
   <arg name="stdout" default="screen" />
 
-  <!-- Disparity -->
-  <node pkg="disparity" type="disparity_node" name="disparity" output="screen">
-    <param name="num_disp" value="128"/>
-    <param name="sgbmWinSize" value="3"/>
-    <param name="method" value="2"/>
-    <param name="disparity8" value="true"/>
-    <param name="uvdisparity" value="false"/>
-    <param name="freeobsmask" value="false"/>
-    <param name="force_cpu_matching" value="true"/>
-    <param name="force_cpu_uv" value="false"/>
-    <remap from="stereo_camera/left/image_rect" to="stereo_camera/left/image_rect_color"/>
-    <remap from="stereo_camera/right/image_rect" to="stereo_camera/right/image_rect_color"/>
-  </node>
-
   <!-- Full disparity to pointcloud -->
   <group ns="stereo_camera">
     <!-- Manager + nodelet -->
-    <node pkg="nodelet" type="nodelet" name="pointclouder_manager_full" args="manager"/>
+    <node pkg="nodelet" type="nodelet" name="stereo_manager" args="manager"/>
+    <node pkg="nodelet" type="nodelet" name="disparity"
+      args="load stereo_image_proc/disparity stereo_manager">
+      <param name="disparity_range" value="128"/>
+      <param name="correlation_window_size" value="3"/>
+      <param name="stereo_algorithm" value="1"/>
+      <param name="prefilter_cap" type="int" value="63"/>
+      <param name="uniqueness_ratio" type="double" value="10.0"/>
+      <param name="speckle_size" type="int" value="100"/>
+      <param name="speckle_range" type="int" value="2"/>
+      <param name="P1" type="int" value="216"/>
+      <param name="P2" type="int" value="864"/>
+      <param name="disp12MaxDiff" type="int" value="1"/>
+      <remap from="left/image_rect" to="left/image_rect_color"/>
+      <remap from="right/image_rect" to="right/image_rect_color"/>
+    </node>
     <node pkg="nodelet" type="nodelet" name="pointclouder_full"
-      args="load stereo_image_proc/point_cloud2 pointclouder_manager_full _queue_size:=100">
+      args="load stereo_image_proc/point_cloud2 stereo_manager _queue_size:=100">
     </node>
   </group>
 
@@ -42,7 +43,7 @@
   </node>
 
   <!-- Masked disparity - only edges -->
-  <node name="disp_masker" pkg="pcl_utils" type="disp_masker" output="$(arg stdout)" >
+  <node name="v2c_disp_masker" pkg="velo2cam_calibration" type="v2c_disp_masker" output="$(arg stdout)" >
     <remap from="~image" to="stereo_camera/disparity" />
     <remap from="~mask" to="edge_detection/image" />
     <remap from="~output" to="stereo_camera/edges_disparity" />
@@ -93,7 +94,7 @@
   </node>
 
   <!-- Plane finding on the masked cloud -->
-  <node pkg="calibration_from_plane" type="plane_segmentation" name="planar_segmentation" output="$(arg stdout)" required="true">
+  <node pkg="velo2cam_calibration" type="v2c_plane_segmentation" name="planar_segmentation" output="$(arg stdout)" required="true">
     <remap from="~input"   to="/stereo_camera/z_filtered_cloud" />
     <rosparam>
       segmentation_type: 1
