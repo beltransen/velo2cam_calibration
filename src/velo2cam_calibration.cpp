@@ -433,7 +433,7 @@ int main(int argc, char **argv){
     ros::NodeHandle nh_("~"); // LOCAL
 
     nh_.param<bool>("sync_iterations", sync_iterations, false);
-    nh_.param<bool>("save_to_file", save_to_file_, true);
+    nh_.param<bool>("save_to_file", save_to_file_, false);
     nh_.param<bool>("publish_tf", publish_tf_, true);
 
 
