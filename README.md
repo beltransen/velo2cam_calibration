@@ -16,7 +16,7 @@ Package developed at [Intelligent Systems Laboratory](http://www.uc3m.es/islab),
 *cam_plane_coeffs* ([pcl_msgs::ModelCoefficients](http://docs.ros.org/api/pcl_msgs/html/msg/ModelCoefficients.html))
 
 &nbsp;&nbsp;&nbsp;&nbsp;Coefficients of the calibration target plane model
-### Published ###
+### Published Topics ###
 */stereo_pattern/centers_cloud* ([velo2cam_calibration::ClusterCentroids](http://docs.ros.org/kinetic/api/velo2cam_calibration/html/msg/ClusterCentroids.html))
 
 &nbsp;&nbsp;&nbsp;&nbsp;Target circles centers obtained from stereo camera data
@@ -50,7 +50,7 @@ TF containing the transformation between both sensors ([see TF info in ROS Wiki]
 
 The node broadcasts the TF transformation between *velodyne* and *stereo* frames.
 The fixed transformation between *stereo_camera* and *stereo* is published by a static broadcaster in *stereo_pattern.launch*.
-The picture below shows the mentioned three coordinate frames:
+The picture below shows the three coordinate frames:
 
 ![gazebo screenshot](screenshots/coordinates_frames.png)
 
