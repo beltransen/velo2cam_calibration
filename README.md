@@ -81,6 +81,6 @@ The following scheme shows the real size of the calibration target used by this 
 **Note:** Other size may be used for convenience. If so, please configure nodes parameters accordingly.
 
 # Citation #
-\[1\] Guindel, C., Beltrán, J., Martín, D. and García, F. (2017). [Automatic Extrinsic Calibration for Lidar-Stereo Vehicle Sensor Setups](https://arxiv.org/abs/1705.04085). arXiv:1705.04085 \[cs.CV\] \*
+\[1\] Guindel, C., Beltrán, J., Martín, D. and García, F. (2017). Automatic Extrinsic Calibration for Lidar-Stereo Vehicle Sensor Setups. *IEEE International Conference on Intelligent Transportation Systems (ITSC), 674–679*.
 
-\* Accepted to  *IEEE International Conference on Intelligent Transportation Systems 2017 (ITSC)*.
+Pre-print available [here](https://arxiv.org/abs/1705.04085).
