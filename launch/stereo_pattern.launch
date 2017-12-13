@@ -114,18 +114,15 @@
   </node>
 
   <!-- Our node -->
-	<node pkg="velo2cam_calibration" type="stereo_pattern" name="stereo_pattern" output="screen">
-		<remap from="~cloud2" to="/stereo_camera/edge_z_filtered_cloud"/>
+  <node pkg="velo2cam_calibration" type="stereo_pattern" name="stereo_pattern" output="screen">
+    <remap from="~cloud2" to="/stereo_camera/edge_z_filtered_cloud"/>
     <remap from="~cam_plane_coeffs" to="/planar_segmentation/model"/>
-	<param name="~min_line_inliers" value="600"/>
+    <param name="~min_line_inliers" value="600"/>
     <param name="~min_plane_normal_z" value="0.8"/>
     <param name="~line_threshold" value="0.02"/>
     <param name="~plane_distance_inliers" value="0.1"/>
     <param name="~min_border_x" value="0.99"/>
-
-
-
-	</node>
+  </node>
 
   <!-- Extract circles cloud -->
   <node pkg="nodelet" type="nodelet" name="extract_circle_indices" args="load pcl/ExtractIndices stereo_pcl_manager" output="screen">
@@ -136,6 +133,5 @@
     </rosparam>
   </node>
 
-  <!-- <node pkg="tf2_ros" type="static_transform_publisher" name="stereo_ros_tf2" args="0 0 0 1.57079632679 -1.57079632679 0 stereo_camera stereo" /> -->
   <node pkg="tf" type="static_transform_publisher" name="stereo_ros_tf" args="0 0 0 -1.57079632679 0 -1.57079632679 stereo stereo_camera 100"/>
 </launch>

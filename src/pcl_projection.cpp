@@ -1,21 +1,25 @@
 /*
-    velo2cam_calibration - Automatic calibration algorithm for extrinsic parameters of a stereo camera and a velodyne
-    Copyright (C) 2017-2018 Jorge Beltran, Carlos Guindel
+  velo2cam_calibration - Automatic calibration algorithm for extrinsic parameters of a stereo camera and a velodyne
+  Copyright (C) 2017-2018 Jorge Beltran, Carlos Guindel
 
-    This file is part of velo2cam_calibration.
+  This file is part of velo2cam_calibration.
 
-    velo2cam_calibration is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 2 of the License, or
-    (at your option) any later version.
+  velo2cam_calibration is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 2 of the License, or
+  (at your option) any later version.
 
-    velo2cam_calibration is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+  velo2cam_calibration is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with velo2cam_calibration.  If not, see <http://www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with velo2cam_calibration.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/*
+  pcl_projection: Project the cloud points to the image
 */
 
 #define DEBUG 1
@@ -43,39 +47,38 @@ using namespace sensor_msgs;
 
 typedef pcl::PointCloud<pcl::PointXYZRGB> PointCloudXYZRGB;
 ros::Publisher pcl_pub;
-//string target_frame, source_frame;
 image_transport::Publisher pub;
 
 typedef struct {
-   double r,g,b;
+  double r,g,b;
 } COLOUR;
 
 COLOUR GetColour(double v,double vmin,double vmax)
 {
-   COLOUR c = {1.0,1.0,1.0}; // white
-   double dv;
+  COLOUR c = {1.0,1.0,1.0}; // white
+  double dv;
 
-   if (v < vmin)
-   v = vmin;
-   if (v > vmax)
-   v = vmax;
-   dv = vmax - vmin;
+  if (v < vmin)
+  v = vmin;
+  if (v > vmax)
+  v = vmax;
+  dv = vmax - vmin;
 
-   if (v < (vmin + 0.25 * dv)) {
-      c.r = 0;
-      c.g = 4 * (v - vmin) / dv;
-   } else if (v < (vmin + 0.5 * dv)) {
-      c.r = 0;
-      c.b = 1 + 4 * (vmin + 0.25 * dv - v) / dv;
-   } else if (v < (vmin + 0.75 * dv)) {
-      c.r = 4 * (v - vmin - 0.5 * dv) / dv;
-      c.b = 0;
-   } else {
-      c.g = 1 + 4 * (vmin + 0.75 * dv - v) / dv;
-      c.b = 0;
-   }
+  if (v < (vmin + 0.25 * dv)) {
+    c.r = 0;
+    c.g = 4 * (v - vmin) / dv;
+  } else if (v < (vmin + 0.5 * dv)) {
+    c.r = 0;
+    c.b = 1 + 4 * (vmin + 0.25 * dv - v) / dv;
+  } else if (v < (vmin + 0.75 * dv)) {
+    c.r = 4 * (v - vmin - 0.5 * dv) / dv;
+    c.b = 0;
+  } else {
+    c.g = 1 + 4 * (vmin + 0.75 * dv - v) / dv;
+    c.b = 0;
+  }
 
-   return(c);
+  return(c);
 }
 
 template <typename T>
@@ -116,8 +119,6 @@ void callback(const PointCloud2::ConstPtr& pcl_msg, const CameraInfoConstPtr& ci
   image_geometry::PinholeCameraModel cam_model_;
   cam_model_.fromCameraInfo(cinfo_msg);
 
-  //pcl::PointCloud<pcl::PointXYZ>::Ptr pcl_cloud(new pcl::PointCloud<pcl::PointXYZ>); // From ROS Msg
-  //pcl::PointCloud<pcl::PointXYZ>::Ptr trans_cloud(new pcl::PointCloud<pcl::PointXYZ>); // After transformation
   pcl::PointCloud<Velodyne::Point>::Ptr pcl_cloud(new pcl::PointCloud<Velodyne::Point>); // From ROS Msg
   pcl::PointCloud<Velodyne::Point>::Ptr trans_cloud(new pcl::PointCloud<Velodyne::Point>); // After transformation
   fromROSMsg(*pcl_msg, *pcl_cloud);
@@ -126,14 +127,10 @@ void callback(const PointCloud2::ConstPtr& pcl_msg, const CameraInfoConstPtr& ci
 
   tf::TransformListener listener;
   tf::StampedTransform transform;
-  //cout << "FRAME ID "<< pcl_cloud->header.frame_id << endl;
-  // pcl_ros::transformPointCloud("stereo_camera", *pcl_cloud, *trans_cloud, listener);
 
   if(DEBUG) ROS_INFO("Waiting for TF");
 
   try{
-    // listener.waitForTransform(target_frame.c_str(), source_frame.c_str(), ros::Time(0), ros::Duration(20.0));
-    // listener.lookupTransform (target_frame.c_str(), source_frame.c_str(), ros::Time(0), transform);
     listener.waitForTransform(image_msg->header.frame_id.c_str(), pcl_msg->header.frame_id.c_str(), ros::Time(0), ros::Duration(20.0));
     listener.lookupTransform (image_msg->header.frame_id.c_str(), pcl_msg->header.frame_id.c_str(), ros::Time(0), transform);
   }catch (tf::TransformException& ex) {
@@ -146,10 +143,7 @@ void callback(const PointCloud2::ConstPtr& pcl_msg, const CameraInfoConstPtr& ci
   transformAsMatrix(transform, transf_mat);
   pcl::transformPointCloud(*pcl_cloud, *trans_cloud, transf_mat);
 
-  //pcl_ros::transformPointCloud (*pcl_cloud, *trans_cloud, transform);
   trans_cloud->header.frame_id = image_msg->header.frame_id;
-
-  //pcl::copyPointCloud(*trans_cloud, *coloured);
 
   cv::Mat alpha(image.size(), CV_8UC3);
   cv::Mat nice(image.size(), CV_8UC3);
@@ -163,10 +157,6 @@ void callback(const PointCloud2::ConstPtr& pcl_msg, const CameraInfoConstPtr& ci
     cv::Point2d uv;
     uv = cam_model_.project3dToPixel(pt_cv);
 
-    //int intensity = clip<int>(int((*pt).range/20.0*255.0), 0, 255);
-
-    //cv::circle(image, uv, 4, cv::Scalar(intensity, intensity, intensity), -1);
-
     if((*pt).z>0 && uv.x>0 && uv.x < image.cols && uv.y > 0 && uv.y < image.rows){
       COLOUR c = GetColour(int((*pt).range/20.0*255.0), 0, 255);
 
@@ -174,25 +164,10 @@ void callback(const PointCloud2::ConstPtr& pcl_msg, const CameraInfoConstPtr& ci
 
       cv::addWeighted(alpha, 0.5, image, 1, 0, nice);
     }
-
-    //if(uv.x>0 && uv.x < image.cols && uv.y > 0 && uv.y < image.rows){
-    // Copy colour to laser pointcloud
-    //(*pt).b = image.at<cv::Vec3b>(uv)[0];
-    //(*pt).g = image.at<cv::Vec3b>(uv)[1];
-    //(*pt).r = image.at<cv::Vec3b>(uv)[2];
-    //}
-
   }
 
   pub.publish(cv_bridge::CvImage(image_msg->header, image_msg->encoding, image).toImageMsg());
   if(DEBUG) ROS_INFO("Done");
-  //ROS_INFO("Publish coloured PC");
-
-  // Publish coloured PointCloud
-  /*sensor_msgs::PointCloud2 pcl_colour_ros;
-  pcl::toROSMsg(*coloured, pcl_colour_ros);
-  pcl_colour_ros.header.stamp = pcl_msg->header.stamp ;
-  pcl_pub.publish(pcl_colour_ros);*/
 }
 
 int main(int argc, char **argv){
@@ -200,16 +175,10 @@ int main(int argc, char **argv){
   ros::NodeHandle nh_("~"); // LOCAL
   image_transport::ImageTransport it(nh_);
 
-  // Parameters
-  //nh_.param<std::string>("target_frame", target_frame, "/stereo_camera");
-  //nh_.param<std::string>("source_frame", source_frame, "/velodyne");
-
   // Subscribers
   message_filters::Subscriber<PointCloud2> pc_sub(nh_, "pointcloud", 1);
   message_filters::Subscriber<CameraInfo> cinfo_sub(nh_, "camera_info", 1);
   message_filters::Subscriber<Image> image_sub(nh_, "image", 1);
-
-  //pcl_pub = nh_.advertise<PointCloud2> ("image_projected", 1);
 
   pub = it.advertise("image_with_points", 1);
 

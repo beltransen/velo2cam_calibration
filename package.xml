@@ -1,32 +1,23 @@
 <?xml version="1.0"?>
 <package>
   <name>velo2cam_calibration</name>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <description>The velo2cam_calibration package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
-  <!-- Example:  -->
-  <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
   <maintainer email="jbeltran@ing.uc3m.es">Jorge Beltran</maintainer>
   <maintainer email="cguindel@ing.uc3m.es">Carlos Guindel</maintainer>
 
-
   <!-- One license tag required, multiple allowed, one license per tag -->
-  <!-- Commonly used license strings: -->
-  <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
   <license>GPLv2</license>
-
 
   <!-- Url tags are optional, but mutiple are allowed, one per tag -->
   <url type="website">http://wiki.ros.org/velo2cam_calibration</url>
 
-
   <!-- Author tags are optional, mutiple are allowed, one per tag -->
   <!-- Authors do not have to be maintianers, but could be -->
-  <!-- Example: -->
   <author email="jbeltran@ing.uc3m.es">Jorge Beltran</author>
   <author email="cguindel@ing.uc3m.es">Carlos Guindel</author>
-
 
   <!-- The *_depend tags are used to specify dependencies -->
   <!-- Dependencies can be catkin packages or system dependencies -->
@@ -43,6 +34,8 @@
   <build_depend>image_geometry</build_depend>
   <build_depend>pcl_ros</build_depend>
   <build_depend>dynamic_reconfigure</build_depend>
+  <build_depend>tinyxml</build_depend>
+  <build_depend>cmake_modules</build_depend>
   <run_depend>cv_bridge</run_depend>
   <run_depend>image_transport</run_depend>
   <run_depend>message_filters</run_depend>
@@ -55,6 +48,7 @@
   <run_depend>image_geometry</run_depend>
   <run_depend>pcl_ros</run_depend>
   <run_depend>dynamic_reconfigure</run_depend>
+  <run_depend>tinyxml</run_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
