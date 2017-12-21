@@ -117,7 +117,6 @@
   <node pkg="velo2cam_calibration" type="stereo_pattern" name="stereo_pattern" output="screen">
     <remap from="~cloud2" to="/stereo_camera/edge_z_filtered_cloud"/>
     <remap from="~cam_plane_coeffs" to="/planar_segmentation/model"/>
-    <param name="~min_line_inliers" value="200"/>
     <param name="~min_plane_normal_z" value="0.8"/>
     <param name="~line_threshold" value="0.1"/>
     <param name="~plane_distance_inliers" value="0.1"/>
