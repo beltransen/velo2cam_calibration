@@ -51,14 +51,13 @@ void callback(const PointCloud2::ConstPtr& pcl_msg, const CameraInfoConstPtr& ci
   if(DEBUG) ROS_INFO("\n\nColouring VELODYNE CLOUD!!");;
   // Conversion
   cv_bridge::CvImageConstPtr cv_img_ptr;
+  cv::Mat image;
   try{
-    cv_img_ptr = cv_bridge::toCvShare(image_msg);
+    image = cv_bridge::toCvShare(image_msg, "bgr8")->image;
   }catch (cv_bridge::Exception& e){
     ROS_ERROR("cv_bridge exception: %s", e.what());
     return;
   }
-  cv::Mat image(cv_img_ptr->image.rows, cv_img_ptr->image.cols, cv_img_ptr->image.type());
-  image = cv_bridge::toCvShare(image_msg)->image;
 
   image_geometry::PinholeCameraModel cam_model_;
   cam_model_.fromCameraInfo(cinfo_msg);
