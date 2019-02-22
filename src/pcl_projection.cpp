@@ -32,10 +32,10 @@
 #include <pcl/point_cloud.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl/common/transforms.h>
+#include <pcl/filters/passthrough.h>
 #include <pcl_ros/transforms.h>
 #include <opencv2/opencv.hpp>
 #include <cv_bridge/cv_bridge.h>
-#include <image_geometry/pinhole_camera_model.h>
 #include <sensor_msgs/CameraInfo.h>
 #include <message_filters/subscriber.h>
 #include <message_filters/synchronizer.h>
@@ -45,23 +45,20 @@
 using namespace std;
 using namespace sensor_msgs;
 
-typedef pcl::PointCloud<pcl::PointXYZRGB> PointCloudXYZRGB;
-ros::Publisher pcl_pub;
 image_transport::Publisher pub;
 
 typedef struct {
   double r,g,b;
 } COLOUR;
 
-COLOUR GetColour(double v,double vmin,double vmax)
+COLOUR // Color map
+GetColour(double v,double vmin,double vmax)
 {
   COLOUR c = {1.0,1.0,1.0}; // white
   double dv;
 
-  if (v < vmin)
-  v = vmin;
-  if (v > vmax)
-  v = vmax;
+  if (v < vmin) v = vmin;
+  if (v > vmax) v = vmax;
   dv = vmax - vmin;
 
   if (v < (vmin + 0.25 * dv)) {
@@ -81,12 +78,7 @@ COLOUR GetColour(double v,double vmin,double vmax)
   return(c);
 }
 
-template <typename T>
-T clip(const T& n, const T& lower, const T& upper) {
-  return std::max(lower, std::min(n, upper));
-}
-
-void
+void // Get the TF as an Eigen matrix
 transformAsMatrix (const tf::Transform& bt, Eigen::Matrix4f &out_mat)
 {
   double mv[12];
@@ -104,10 +96,29 @@ transformAsMatrix (const tf::Transform& bt, Eigen::Matrix4f &out_mat)
   out_mat (2, 3) = origin.z ();
 }
 
-void callback(const PointCloud2::ConstPtr& pcl_msg, const CameraInfoConstPtr& cinfo_msg, const ImageConstPtr& image_msg){
-  if(DEBUG) ROS_INFO("Projecting poincloud to the image %ld", pcl_msg->header.stamp.toNSec()-image_msg->header.stamp.toNSec());
+void // Get the camera_info P as an Eigen matrix
+projectionAsMatrix (const CameraInfoConstPtr& cinfo_msg, Eigen::Matrix4f &out_mat)
+{
+  for (int i = 0, k = 0; i < 3; i++) {
+    for (int j = 0; j < 4; j++, k++){
+      out_mat(i, j) = cinfo_msg->P[k];
+    }
+  }
+  out_mat(3,0) = out_mat(3,1) = out_mat(3,2) = 0;
+  out_mat(3,3) = 1;
+}
 
-  // Conversion
+void callback(const PointCloud2::ConstPtr& pcl_msg, const CameraInfoConstPtr& cinfo_msg, const ImageConstPtr& image_msg){
+
+
+  pcl::PointCloud<Velodyne::Point>::Ptr pcl_cloud(new pcl::PointCloud<Velodyne::Point>); // From ROS Msg
+  pcl::PointCloud<Velodyne::Point>::Ptr filtered_pcl_cloud(new pcl::PointCloud<Velodyne::Point>); // Only forward points
+  pcl::PointCloud<Velodyne::Point>::Ptr trans_cloud(new pcl::PointCloud<Velodyne::Point>); // After transformation
+
+  tf::TransformListener listener;
+  tf::StampedTransform transform;
+
+  // Get the image
   cv::Mat image;
   try{
     image = cv_bridge::toCvShare(image_msg)->image;
@@ -116,20 +127,12 @@ void callback(const PointCloud2::ConstPtr& pcl_msg, const CameraInfoConstPtr& ci
     return;
   }
 
-  image_geometry::PinholeCameraModel cam_model_;
-  cam_model_.fromCameraInfo(cinfo_msg);
-
-  pcl::PointCloud<Velodyne::Point>::Ptr pcl_cloud(new pcl::PointCloud<Velodyne::Point>); // From ROS Msg
-  pcl::PointCloud<Velodyne::Point>::Ptr trans_cloud(new pcl::PointCloud<Velodyne::Point>); // After transformation
+  // Get the cloud
   fromROSMsg(*pcl_msg, *pcl_cloud);
-
   Velodyne::addRange(*pcl_cloud);
 
-  tf::TransformListener listener;
-  tf::StampedTransform transform;
-
+  // Get the TF
   if(DEBUG) ROS_INFO("Waiting for TF");
-
   try{
     listener.waitForTransform(image_msg->header.frame_id.c_str(), pcl_msg->header.frame_id.c_str(), ros::Time(0), ros::Duration(20.0));
     listener.lookupTransform (image_msg->header.frame_id.c_str(), pcl_msg->header.frame_id.c_str(), ros::Time(0), transform);
@@ -137,37 +140,52 @@ void callback(const PointCloud2::ConstPtr& pcl_msg, const CameraInfoConstPtr& ci
     ROS_WARN("[pcl_projection] TF exception:\n%s", ex.what());
     return;
   }
-
   if(DEBUG) ROS_INFO("TF available");
+
+  // Filter points behind image plane (approximation)
+  pcl::PassThrough<Velodyne::Point> pass;
+  pass.setInputCloud (pcl_cloud);
+  pass.setFilterFieldName ("x");
+  pass.setFilterLimits (0.0, 100.0);
+  pass.filter (*filtered_pcl_cloud);
+
+  // Move the lidar cloud to the camera frame
   Eigen::Matrix4f transf_mat;
   transformAsMatrix(transform, transf_mat);
-  pcl::transformPointCloud(*pcl_cloud, *trans_cloud, transf_mat);
 
-  trans_cloud->header.frame_id = image_msg->header.frame_id;
+  // Thanks @irecorte for this procedure:
+  // Get the 4x4 projection matrix
+  Eigen::Matrix4f projection_matrix;
+  projectionAsMatrix(cinfo_msg, projection_matrix);
 
-  cv::Mat alpha(image.size(), CV_8UC3);
-  cv::Mat nice(image.size(), CV_8UC3);
+  // Get the array of lidar points
+  Eigen::MatrixXf points_all = filtered_pcl_cloud->getMatrixXfMap();
 
-  if(DEBUG) ROS_INFO("Projecting every single point. Please wait. ");
+  // Only x,y,z,1 (homogeneous coordinates)
+  Eigen::MatrixXf points = points_all.topRows(4);
+  points.row(3) =  Eigen::MatrixXf::Constant(1, points_all.cols(), 1);
 
-  #pragma omp parallel for
-  for (pcl::PointCloud<Velodyne::Point>::iterator pt = trans_cloud->points.begin(); pt < trans_cloud->points.end(); pt++)
-  {
-    cv::Point3d pt_cv((*pt).x, (*pt).y, (*pt).z);
-    cv::Point2d uv;
-    uv = cam_model_.project3dToPixel(pt_cv);
+  // Projection
+  Eigen::MatrixXf points_img =  projection_matrix * transf_mat * points;
+  points_img.row(0) = points_img.row(0).cwiseQuotient(points_img.row(2));
+  points_img.row(1) = points_img.row(1).cwiseQuotient(points_img.row(2));
 
-    if((*pt).z>0 && uv.x>0 && uv.x < image.cols && uv.y > 0 && uv.y < image.rows){
-      COLOUR c = GetColour(int((*pt).range/20.0*255.0), 0, 255);
-
-      cv::circle(image, uv, 3, cv::Scalar(int(255*c.b),int(255*c.g),int(255*c.r)), -1);
-
-      cv::addWeighted(alpha, 0.5, image, 1, 0, nice);
+  // Draw the points
+  for (int i = 0; i < points_img.cols(); i++){
+    cv::Point2i p(points_img(0,i), points_img(1,i));
+    // Only points within the image
+    if (p.x >= 0 && p.x < cinfo_msg->width && p.y >= 0 && p.y < cinfo_msg->height){
+      // Apply colormap to depth
+      float depth = filtered_pcl_cloud->points[i].range;
+      // Want it faster? Try depth = transf_points(2, i)
+      COLOUR c = GetColour(int(depth/20.0*255.0), 0, 255);
+      cv::circle(image, p, 3, cv::Scalar(int(255*c.b),int(255*c.g),int(255*c.r)), -1);
     }
   }
 
+  // Publish
   pub.publish(cv_bridge::CvImage(image_msg->header, image_msg->encoding, image).toImageMsg());
-  if(DEBUG) ROS_INFO("Done");
+  // if(DEBUG) ROS_INFO("Done");
 }
 
 int main(int argc, char **argv){
