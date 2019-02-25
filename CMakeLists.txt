@@ -25,14 +25,6 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 find_package(TinyXML REQUIRED)
-
-find_package(OpenMP)
-if(OPENMP_FOUND)
-  message(STATUS "OPENMP FOUND")
-  set(OpenMP_FLAGS ${OpenMP_CXX_FLAGS})
-  set(OpenMP_LIBS gomp)
-endif()
-
 find_package(OpenCV 3 REQUIRED)
 find_package(PCL 1.7 REQUIRED)
 
@@ -95,8 +87,6 @@ add_executable(levinson src/levinson.cpp)
 add_executable(v2c_plane_segmentation src/plane.cpp)
 add_executable(v2c_disp_masker src/disp_masker.cpp)
 
-target_compile_options(pcl_projection PRIVATE ${OpenMP_FLAGS})
-
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 add_dependencies(laser_pattern
@@ -144,7 +134,6 @@ target_link_libraries(pcl_projection
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
   ${PCL_LIBRARIES}
-  ${OpenMP_LIBS}
 )
 target_link_libraries(levinson
   ${catkin_LIBRARIES}
