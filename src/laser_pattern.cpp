@@ -132,22 +132,21 @@ void callback(const PointCloud2::ConstPtr& laser_cloud){
 
   // Get edges points by range
   vector<vector<Velodyne::Point*> > rings = Velodyne::getRings(*velocloud);
-  for (vector<vector<Velodyne::Point*> >::iterator ring = rings.begin(); ring < rings.end(); ring++){
-    Velodyne::Point *prev, *succ;
+  for (vector<vector<Velodyne::Point*> >::iterator ring = rings.begin(); ring < rings.end(); ++ring){
     if (ring->empty()) continue;
 
     (*ring->begin())->intensity = 0;
     (*(ring->end() - 1))->intensity = 0;
     for (vector<Velodyne::Point*>::iterator pt = ring->begin() + 1; pt < ring->end() - 1; pt++){
-      prev = *(pt - 1);
-      succ = *(pt + 1);
+      Velodyne::Point *prev = *(pt - 1);
+      Velodyne::Point *succ = *(pt + 1);
       (*pt)->intensity = max( max( prev->range-(*pt)->range, succ->range-(*pt)->range), 0.f);
     }
   }
 
   pcl::PointCloud<Velodyne::Point>::Ptr edges_cloud(new pcl::PointCloud<Velodyne::Point>);
   float THRESHOLD = 0.5 ;
-  for (pcl::PointCloud<Velodyne::Point>::iterator pt = velocloud->points.begin(); pt < velocloud->points.end(); pt++){
+  for (pcl::PointCloud<Velodyne::Point>::iterator pt = velocloud->points.begin(); pt < velocloud->points.end(); ++pt){
     if(pt->intensity>THRESHOLD){
       edges_cloud->push_back(*pt);
     }
@@ -169,7 +168,7 @@ void callback(const PointCloud2::ConstPtr& laser_cloud){
   pcl::PointCloud<pcl::PointXYZ>::Ptr circles_cloud(new pcl::PointCloud<pcl::PointXYZ>);
   vector<vector<Velodyne::Point*> > rings2 = Velodyne::getRings(*pattern_cloud);
   int ringsWithCircle = 0;
-  for (vector<vector<Velodyne::Point*> >::iterator ring = rings2.begin(); ring < rings2.end(); ring++){
+  for (vector<vector<Velodyne::Point*> >::iterator ring = rings2.begin(); ring < rings2.end(); ++ring){
     if(ring->size() < 4){
       ring->clear();
     }else{ // Remove first and last points in ring
@@ -177,7 +176,7 @@ void callback(const PointCloud2::ConstPtr& laser_cloud){
       ring->erase(ring->begin());
       ring->pop_back();
 
-      for (vector<Velodyne::Point*>::iterator pt = ring->begin(); pt < ring->end(); pt++){
+      for (vector<Velodyne::Point*>::iterator pt = ring->begin(); pt < ring->end(); ++pt){
         // Velodyne specific info no longer needed for calibration
         // so standard point is used from now on
         pcl::PointXYZ point;
@@ -245,9 +244,9 @@ void callback(const PointCloud2::ConstPtr& laser_cloud){
 
   //if(DEBUG) cout << cluster_indices.size() << " clusters found from " << xy_cloud->points.size() << " points in cloud" << endl;
 
-  for (std::vector<pcl::PointIndices>::iterator it=cluster_indices.begin(); it<cluster_indices.end(); it++) {
+  for (std::vector<pcl::PointIndices>::iterator it=cluster_indices.begin(); it<cluster_indices.end(); ++it) {
     float accx = 0., accy = 0., accz = 0.;
-    for(vector<int>::iterator it2=it->indices.begin(); it2<it->indices.end(); it2++){
+    for(vector<int>::iterator it2=it->indices.begin(); it2<it->indices.end(); ++it2){
       accx+=xy_cloud->at(*it2).x;
       accy+=xy_cloud->at(*it2).y;
       accz+=xy_cloud->at(*it2).z;
@@ -279,7 +278,7 @@ void callback(const PointCloud2::ConstPtr& laser_cloud){
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_f(new pcl::PointCloud<pcl::PointXYZ>); // Temp pc used for swaping
 
   // Force pattern points to belong to computed plane
-  for (pcl::PointCloud<pcl::PointXYZ>::iterator pt = copy_cloud->points.begin(); pt < copy_cloud->points.end(); pt++){
+  for (pcl::PointCloud<pcl::PointXYZ>::iterator pt = copy_cloud->points.begin(); pt < copy_cloud->points.end(); ++pt){
     pt->z = zcoord_xyplane;
   }
 
@@ -318,7 +317,7 @@ void callback(const PointCloud2::ConstPtr& laser_cloud){
     // if(DEBUG) ROS_INFO("Distance to centroid %f", centroid_distance);
     if (centroid_distance < centroid_distance_min_){
       valid = false;
-      for (pcl::PointCloud<pcl::PointXYZ>::iterator pt = circle_cloud->points.begin(); pt < circle_cloud->points.end(); pt++){
+      for (pcl::PointCloud<pcl::PointXYZ>::iterator pt = circle_cloud->points.begin(); pt < circle_cloud->points.end(); ++pt){
         centroid_cloud_inliers.push_back(*pt);
       }
     }else if(centroid_distance > centroid_distance_max_){
@@ -334,13 +333,13 @@ void callback(const PointCloud2::ConstPtr& laser_cloud){
       }
 
       // If center is valid, check if any point from wrong_circle belongs to it, and pop it if true
-      for (std::vector<pcl::PointXYZ>::iterator pt = centroid_cloud_inliers.begin(); pt < centroid_cloud_inliers.end(); pt++){
+      for (std::vector<pcl::PointXYZ>::iterator pt = centroid_cloud_inliers.begin(); pt < centroid_cloud_inliers.end(); ++pt){
         pcl::PointXYZ schrodinger_pt((*pt).x, (*pt).y, (*pt).z);
         double distance_to_cluster = sqrt(pow(schrodinger_pt.x-center.x,2) + pow(schrodinger_pt.y-center.y,2) + pow(schrodinger_pt.z-center.z,2));
         // if(DEBUG) ROS_INFO("Distance to cluster: %lf", distance_to_cluster);
         if(distance_to_cluster<circle_radius_+0.02){
           centroid_cloud_inliers.erase(pt);
-          pt--; // To avoid out of range
+          --pt; // To avoid out of range
         }
       }
       // if(DEBUG) ROS_INFO("Remaining inliers %lu", centroid_cloud_inliers.size());
@@ -366,7 +365,7 @@ void callback(const PointCloud2::ConstPtr& laser_cloud){
   }
 
   if(found_centers.size() >= min_centers_found_ && found_centers.size() < 5){
-    for (std::vector<std::vector<float> >::iterator it = found_centers.begin(); it < found_centers.end(); it++){
+    for (std::vector<std::vector<float> >::iterator it = found_centers.begin(); it < found_centers.end(); ++it){
       pcl::PointXYZ center;
       center.x = (*it)[0];
       center.y = (*it)[1];

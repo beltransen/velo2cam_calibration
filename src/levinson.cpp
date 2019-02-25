@@ -112,15 +112,14 @@ COLOUR GetColour(double v,double vmin,double vmax)
 
 void edges_pointcloud(pcl::PointCloud<Velodyne::Point>::Ptr pc){
   std::vector<std::vector<Velodyne::Point*> > rings = Velodyne::getRings(*pc);
-  for (std::vector<std::vector<Velodyne::Point*> >::iterator ring = rings.begin(); ring < rings.end(); ring++){
-    Velodyne::Point *prev, *succ;
+  for (std::vector<std::vector<Velodyne::Point*> >::iterator ring = rings.begin(); ring < rings.end(); ++ring){
     if (ring->empty()) continue;
 
     (*ring->begin())->intensity = 0;
     (*(ring->end() - 1))->intensity = 0;
-    for (vector<Velodyne::Point*>::iterator pt = ring->begin() + 1; pt < ring->end() - 1; pt++){
-      prev = *(pt - 1);
-      succ = *(pt + 1);
+    for (vector<Velodyne::Point*>::iterator pt = ring->begin() + 1; pt < ring->end() - 1; ++pt){
+      Velodyne::Point *prev = *(pt - 1);
+      Velodyne::Point *succ = *(pt + 1);
       (*pt)->intensity = pow(std::max( std::max( prev->range-(*pt)->range, succ->range-(*pt)->range), 0.f), 0.5);
     }
   }
@@ -201,10 +200,9 @@ inline float calc(float &val, const float &psi, int row, int col, const cv::Mat&
 template <typename Type_in, typename Type_out>
 inline void
 neighbors_x_pos(cv::Mat &in, cv::Mat &out, float psi, float alpha){
-  float val = 0;
-
   for(int row = 0; row < in.rows; ++row)
   {
+    float val = 0;
     val = 0;
     for(int col = 0; col < in.cols; ++col)
     {
@@ -411,15 +409,6 @@ void checkExtrinics(const sensor_msgs::CameraInfoConstPtr& cinfo_msg){
         for (int iter_r=0; iter_r<MAX; iter_r++){
           for (int iter_p=0; iter_p<MAX; iter_p++){
             for (int iter_yaw=0; iter_yaw<MAX; iter_yaw++){
-
-              x_mod = x;
-              y_mod = y;
-              z_mod = z;
-
-              r_mod = r;
-              p_mod = p;
-              yaw_mod = yaw;
-
               x_mod = x + (iter_x-M)*INC;
               y_mod = y + (iter_y-M)*INC;
               z_mod = z + (iter_z-M)*INC;
@@ -444,7 +433,7 @@ void checkExtrinics(const sensor_msgs::CameraInfoConstPtr& cinfo_msg){
 
               double objective_function = 0;
 
-              for (pcl::PointCloud<Velodyne::Point>::iterator pt = trans_cloud->points.begin(); pt < trans_cloud->points.end(); pt++)
+              for (pcl::PointCloud<Velodyne::Point>::iterator pt = trans_cloud->points.begin(); pt < trans_cloud->points.end(); ++pt)
               {
                 cv::Point3d pt_cv((*pt).x, (*pt).y, (*pt).z);
                 cv::Point2d uv;
@@ -494,7 +483,7 @@ void laser_callback(const sensor_msgs::PointCloud2::ConstPtr& velo_cloud){
   edges_cloud =  pcl::PointCloud<Velodyne::Point>::Ptr(new pcl::PointCloud<Velodyne::Point>);
 
   float THRESHOLD = 0.30;
-  for (pcl::PointCloud<Velodyne::Point>::iterator pt = laser_cloud->points.begin(); pt < laser_cloud->points.end(); pt++){
+  for (pcl::PointCloud<Velodyne::Point>::iterator pt = laser_cloud->points.begin(); pt < laser_cloud->points.end(); ++pt){
     if(pow(pt->intensity,2)>THRESHOLD){
       edges_cloud->push_back(*pt);
     }

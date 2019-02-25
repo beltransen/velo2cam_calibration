@@ -205,7 +205,7 @@ void callback(const PointCloud2::ConstPtr& camera_cloud,
   pcl::PointCloud<pcl::PointXYZ>::Ptr cam_plane_wol_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
 
   // Remove them
-  for (vector<pcl::ModelCoefficients>::iterator it=out_lines.begin(); it<out_lines.end(); it++){
+  for (vector<pcl::ModelCoefficients>::iterator it=out_lines.begin(); it<out_lines.end(); ++it){
 
     pcl::PointIndices::Ptr line_ind (new pcl::PointIndices);
     pcl::SampleConsensusModelLine<pcl::PointXYZ>::Ptr dil (new pcl::SampleConsensusModelLine<pcl::PointXYZ> (cam_plane_cloud));
@@ -270,7 +270,7 @@ void callback(const PointCloud2::ConstPtr& camera_cloud,
 
   // Force pattern points to belong to computed plane
   for (pcl::PointCloud<pcl::PointXYZ>::iterator pt = xy_cloud->points.begin();
-  pt < xy_cloud->points.end(); pt++){
+  pt < xy_cloud->points.end(); ++pt){
     pt->z = zcoord_xyplane;
   }
 
@@ -348,7 +348,7 @@ void callback(const PointCloud2::ConstPtr& camera_cloud,
     ROS_WARN("Not enough centers: %ld", found_centers.size());
     return;
   }else{
-    for (std::vector<std::vector<float> >::iterator it = found_centers.begin(); it < found_centers.end(); it++){
+    for (std::vector<std::vector<float> >::iterator it = found_centers.begin(); it < found_centers.end(); ++it){
       pcl::PointXYZ center;
       center.x = (*it)[0];
       center.y = (*it)[1];

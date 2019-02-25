@@ -306,7 +306,7 @@ void laser_callback(const velo2cam_calibration::ClusterCentroids::ConstPtr velo_
 
   if(DEBUG) ROS_INFO("[V2C] LASER");
 
-  for(vector<pcl::PointXYZ>::iterator it=lv.begin(); it<lv.end(); it++){
+  for(vector<pcl::PointXYZ>::iterator it=lv.begin(); it<lv.end(); ++it){
     if (DEBUG) cout << "l" << it - lv.begin() << "="<< "[" << (*it).x << " " << (*it).y << " " << (*it).z << "]" << endl;
   }
 
@@ -391,7 +391,7 @@ void stereo_callback(velo2cam_calibration::ClusterCentroids::ConstPtr image_cent
 
   if(DEBUG) ROS_INFO("[V2C] CAMERA");
 
-  for(vector<pcl::PointXYZ>::iterator it=cv.begin(); it<cv.end(); it++){
+  for(vector<pcl::PointXYZ>::iterator it=cv.begin(); it<cv.end(); ++it){
     if (DEBUG) cout << "c" << it - cv.begin() << "="<< "[" << (*it).x << " " << (*it).y << " " << (*it).z << "]"<<endl;
   }
 

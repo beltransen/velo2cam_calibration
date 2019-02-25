@@ -83,7 +83,7 @@ void callback(const PointCloud2::ConstPtr& pcl_msg, const CameraInfoConstPtr& ci
 
   pcl::copyPointCloud(*trans_cloud, *coloured);
 
-  for (pcl::PointCloud<pcl::PointXYZRGB>::iterator pt = coloured->points.begin(); pt < coloured->points.end(); pt++)
+  for (pcl::PointCloud<pcl::PointXYZRGB>::iterator pt = coloured->points.begin(); pt < coloured->points.end(); ++pt)
   {
     cv::Point3d pt_cv((*pt).x, (*pt).y, (*pt).z);
     cv::Point2d uv;
