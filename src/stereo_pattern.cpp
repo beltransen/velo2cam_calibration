@@ -236,7 +236,7 @@ void callback(const PointCloud2::ConstPtr& camera_cloud,
 
   // 3.ROTATE CLOUD TO FACE PATTERN PLANE
   pcl::PointCloud<pcl::PointXYZ>::Ptr xy_cloud(new pcl::PointCloud<pcl::PointXYZ>);
-  Eigen::Vector3d xy_plane_normal_vector, floor_plane_normal_vector;
+  Eigen::Vector3f xy_plane_normal_vector, floor_plane_normal_vector;
   xy_plane_normal_vector[0] = 0.0;
   xy_plane_normal_vector[1] = 0.0;
   xy_plane_normal_vector[2] = -1.0;
@@ -248,7 +248,7 @@ void callback(const PointCloud2::ConstPtr& camera_cloud,
   std::vector<int> indices;
   pcl::removeNaNFromPointCloud (*cam_plane_cloud, *cam_plane_cloud, indices);
 
-  Eigen::Affine3d rotation = getRotationMatrix(floor_plane_normal_vector, xy_plane_normal_vector);
+  Eigen::Affine3f rotation = getRotationMatrix(floor_plane_normal_vector, xy_plane_normal_vector);
   pcl::transformPointCloud(*cam_plane_cloud, *xy_cloud, rotation);
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr aux_cloud(new pcl::PointCloud<pcl::PointXYZ>);

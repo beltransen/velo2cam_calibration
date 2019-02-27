@@ -200,7 +200,7 @@ void callback(const PointCloud2::ConstPtr& laser_cloud){
 
   // Rotate cloud to face pattern plane
   pcl::PointCloud<pcl::PointXYZ>::Ptr xy_cloud(new pcl::PointCloud<pcl::PointXYZ>);
-  Eigen::Vector3d xy_plane_normal_vector, floor_plane_normal_vector;
+  Eigen::Vector3f xy_plane_normal_vector, floor_plane_normal_vector;
   xy_plane_normal_vector[0] = 0.0;
   xy_plane_normal_vector[1] = 0.0;
   xy_plane_normal_vector[2] = -1.0;
@@ -209,7 +209,7 @@ void callback(const PointCloud2::ConstPtr& laser_cloud){
   floor_plane_normal_vector[1] = coefficients->values[1];
   floor_plane_normal_vector[2] = coefficients->values[2];
 
-  Eigen::Affine3d rotation = getRotationMatrix(floor_plane_normal_vector, xy_plane_normal_vector);
+  Eigen::Affine3f rotation = getRotationMatrix(floor_plane_normal_vector, xy_plane_normal_vector);
   pcl::transformPointCloud(*circles_cloud, *xy_cloud, rotation);
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr aux_cloud(new pcl::PointCloud<pcl::PointXYZ>);

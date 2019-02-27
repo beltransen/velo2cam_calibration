@@ -210,15 +210,15 @@ void getCenterClusters(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_in, pcl::PointC
   }
 }
 
-Eigen::Affine3d getRotationMatrix(Eigen::Vector3d source, Eigen::Vector3d target){
-  Eigen::Vector3d rotation_vector = target.cross(source);
+Eigen::Affine3f getRotationMatrix(Eigen::Vector3f source, Eigen::Vector3f target){
+  Eigen::Vector3f rotation_vector = target.cross(source);
   rotation_vector.normalize();
   double theta = acos(source[2]/sqrt( pow(source[0],2)+ pow(source[1],2) + pow(source[2],2)));
 
   if(DEBUG) ROS_INFO("Rot. vector: (%lf %lf %lf) / Angle: %lf", rotation_vector[0], rotation_vector[1], rotation_vector[2], theta);
 
-  Eigen::Matrix3d rotation = Eigen::AngleAxis<double>(theta, rotation_vector) * Eigen::Scaling(1.0);
-  Eigen::Affine3d rot(rotation);
+  Eigen::Matrix3f rotation = Eigen::AngleAxis<float>(theta, rotation_vector) * Eigen::Scaling(1.0f);
+  Eigen::Affine3f rot(rotation);
   return rot;
 }
 
