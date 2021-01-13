@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.2)
 project(velo2cam_calibration)
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -w ")
@@ -22,7 +22,6 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(TinyXML REQUIRED)
 find_package(OpenCV REQUIRED)
-find_package(PCL 1.7 REQUIRED)
 
 generate_dynamic_reconfigure_options(
   cfg/Lidar.cfg
@@ -62,17 +61,12 @@ include_directories(
   include
   ${catkin_INCLUDE_DIRS}
   ${OpenCV_LIBRARIES}
-  ${PCL_INCLUDE_DIRS}
   ${TinyXML_INCLUDE_DIRS}
 )
 
-link_directories(
-  ${PCL_LIBRARY_DIRS}
-)
+#link_directories()
 
-add_definitions(
-  ${PCL_DEFINITIONS}
-)
+#add_definitions()
 
 ## Declare cpp executables
 add_executable(lidar_pattern src/lidar_pattern.cpp)
@@ -111,27 +105,22 @@ add_dependencies(v2c_plane_segmentation ${PROJECT_NAME}_gencfg)
 target_link_libraries(stereo_pattern
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
-  ${PCL_LIBRARIES}
 )
 target_link_libraries(lidar_pattern
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
-  ${PCL_LIBRARIES}
 )
 target_link_libraries(mono_qr_pattern
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
-  ${PCL_LIBRARIES}
 )
 target_link_libraries(velo2cam_calibration
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
-  ${PCL_LIBRARIES}
   ${TinyXML_LIBRARIES}
 )
 target_link_libraries(v2c_plane_segmentation
   ${catkin_LIBRARIES}
-  ${PCL_LIBRARIES}
 )
 target_link_libraries(v2c_disp_masker
   ${catkin_LIBRARIES}

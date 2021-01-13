@@ -27,7 +27,7 @@ The following picture shows a possible embodiment of the proposed calibration ta
 ## Citation ##
 If you use this work in your research, please consider citing the following paper:
 
-[1] Beltrán, J., Guindel, C., and García, F. (2021). [Automatic Extrinsic Calibration Method for LiDAR and Camera Sensor Setups](https://arxiv.org/abs/2101.04431). arXiv:2101.04431 [cs.CV]. Submitted to IEEE Transactions on Intelligent Transportation Systems.
+[1] Beltrán, J., Guindel, C., and García, F. (2021). [Automatic Extrinsic Calibration Method for LiDAR and Camera Sensor Setups](https://arxiv.org/abs/2101.04431). arXiv:2101.04431 [cs.RO]. Submitted to IEEE Transactions on Intelligent Transportation Systems.
 
 A previous version of this tool is available [here](https://github.com/beltransen/velo2cam_calibration/tree/v1.0) and was described on this paper: 
 
