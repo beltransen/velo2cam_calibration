@@ -1,0 +1,17 @@
+<launch>
+
+  <arg name="sensor1_type" default="lidar"/>
+  <arg name="sensor2_type" default="mono"/>
+  <arg name="sensor1_id" default="0"/>
+  <arg name="sensor2_id" default="0"/>
+
+  <node pkg="velo2cam_calibration" type="velo2cam_calibration" name="velo2cam_calibration" output="screen">
+    <!-- lidar_pattern, mono_qr_pattern, stereo_pattern -->
+    <remap from="~cloud1" to="$(arg sensor1_type)_pattern_$(arg sensor1_id)/centers_cloud"/>
+    <remap from="~cloud2" to="$(arg sensor2_type)_pattern_$(arg sensor2_id)/centers_cloud"/>
+    <param name="is_sensor1_cam" value="false" unless="$(eval sensor1_type == 'mono' or sensor1_type == 'stereo')"/>
+    <param name="is_sensor2_cam" value="false" unless="$(eval sensor2_type == 'mono' or sensor2_type == 'stereo')"/>
+    <param name="is_sensor1_cam" value="true" if="$(eval sensor1_type == 'mono' or sensor1_type == 'stereo')"/>
+    <param name="is_sensor2_cam" value="true" if="$(eval sensor2_type == 'mono' or sensor2_type == 'stereo')"/>
+  </node>
+</launch>

@@ -1,0 +1,53 @@
+<launch>
+
+  <arg name="stdout" default="screen" />
+  <arg name="cloud_topic" default="velodyne_points" />
+  <arg name="sensor_id" default="0" />
+
+  <node pkg="nodelet" type="nodelet" name="pcl_manager_$(arg sensor_id)" args="manager" output="$(arg stdout)"/>
+
+  <node pkg="nodelet" type="nodelet" name="pass_through_z_velo_$(arg sensor_id)" args="load pcl/PassThrough pcl_manager_$(arg sensor_id)" output="$(arg stdout)">
+    <remap from="~input" to="$(arg cloud_topic)" />
+    <remap from="~output" to="/lidar_pattern_$(arg sensor_id)/z_filtered" />
+    <rosparam>
+      filter_field_name: z
+      filter_limit_min: -2
+      filter_limit_max: 1
+      filter_limit_negative: False
+      max_queue_size: 1
+    </rosparam>
+  </node>
+
+  <node pkg="nodelet" type="nodelet" name="pass_through_y_velo_$(arg sensor_id)" args="load pcl/PassThrough pcl_manager_$(arg sensor_id)" output="$(arg stdout)">
+    <remap from="~input" to="/lidar_pattern_$(arg sensor_id)/z_filtered" />
+    <remap from="~output" to="/lidar_pattern_$(arg sensor_id)/zy_filtered" />
+    <rosparam>
+      filter_field_name: y
+      filter_limit_min: -100
+      filter_limit_max: 100
+      filter_limit_negative: False
+      max_queue_size: 1
+    </rosparam>
+  </node>
+
+  <node pkg="nodelet" type="nodelet" name="pass_through_x_velo_$(arg sensor_id)" args="load pcl/PassThrough pcl_manager_$(arg sensor_id)" output="$(arg stdout)">
+    <remap from="~input" to="/lidar_pattern_$(arg sensor_id)/zy_filtered" />
+    <remap from="~output" to="/lidar_pattern_$(arg sensor_id)/zyx_filtered" />
+    <rosparam>
+      filter_field_name: x
+      filter_limit_min: 0
+      filter_limit_max: 100
+      filter_limit_negative: False
+      max_queue_size: 1
+    </rosparam>
+  </node>
+
+  <node pkg="velo2cam_calibration" type="lidar_pattern" name="lidar_pattern_$(arg sensor_id)" output="screen">
+    <remap from="~cloud1" to="/lidar_pattern_$(arg sensor_id)/zyx_filtered"/>
+    <rosparam>
+      passthrough_radius_min: 1.0
+      passthrough_radius_max: 6.0
+    </rosparam>
+  </node>
+
+</launch>

@@ -23,4 +23,5 @@ srv_gen/
 
 launch/calibrated_tf*
 scripts/
-src/mono_pattern.cpp
+.idea/
+.vscode/

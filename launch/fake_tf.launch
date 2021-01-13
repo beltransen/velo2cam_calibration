@@ -1,6 +1,0 @@
-<launch>
-
-  <node pkg="tf" type="static_transform_publisher" name="gazebo_tf" args="-0.2 0.2 1.3 0 -0.2 0.1 map velodyne 100" />
-  <node pkg="tf" type="static_transform_publisher" name="gazebo_tf2" args="0 -0.2 1.6 0.1 0.1 0 map stereo 100" />
-
-</launch>

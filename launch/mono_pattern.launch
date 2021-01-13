@@ -1,0 +1,19 @@
+<launch>
+
+    <arg name="stdout" default="screen" />
+    <arg name="camera_name" default="/stereo_camera/left" />
+    <arg name="image_topic" default="image_rect_color" />
+    <arg name="frame_name" default="stereo_camera" />
+    <arg name="sensor_id" default="0" />
+
+    <!-- Marker size (side) in meters -->
+    <arg name="marker_size" value="0.2"/>
+
+    <node pkg="velo2cam_calibration" type="mono_qr_pattern" name="mono_pattern_$(arg sensor_id)" output="$(arg stdout)">
+        <param name="image_topic" value="$(arg camera_name)/$(arg image_topic)" />
+        <param name="cinfo_topic" value="$(arg camera_name)/camera_info" />
+        <param name="marker_size" value="$(arg marker_size)"/>
+    </node>
+
+    <node pkg="tf" type="static_transform_publisher" name="camera_ros_tf_$(arg sensor_id)" args="0 0 0 -1.57079632679 0 -1.57079632679 rotated_$(arg frame_name) $(arg frame_name) 10"/>
+</launch>
