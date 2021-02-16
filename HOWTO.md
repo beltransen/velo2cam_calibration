@@ -3,7 +3,7 @@
 
 # Setup #
 First, you must identify the topics delivered by the drivers of the sensors to be calibrated. In particular, velo2cam_calibration expects the following inputs:
-* Monocular: a rectified image ([sensor_msgs/Image](http://docs.ros.org/api/sensor_msgs/html/msg/Image.html)) and the corresponding meta-information topic ([sensor_msgs/CameraInfo](http://docs.ros.org/api/sensor_msgs/html/msg/CameraInfo.html)). Both topics are expected to be referred to the same *frame_id*.
+* Monocular: an image ([sensor_msgs/Image](http://docs.ros.org/api/sensor_msgs/html/msg/Image.html)) and the corresponding meta-information topic ([sensor_msgs/CameraInfo](http://docs.ros.org/api/sensor_msgs/html/msg/CameraInfo.html)). If the CameraInfo topic contains the distortion parameters, the image must be unrectified (i.e., *image_color*); on the other hand, if the image used for the calibration is already rectified (i.e., *image_rect_color*), the vector D representing the distortion parameters in the camera_info topic must be empty. In any case, both topics are expected to be referred to the same *frame_id*.
 * Stereo: a pair of rectified images (2x [sensor_msgs/Image](http://docs.ros.org/api/sensor_msgs/html/msg/Image.html)) and the corresponding meta-information topic ([sensor_msgs/CameraInfo](http://docs.ros.org/api/sensor_msgs/html/msg/CameraInfo.html)). All the topics are expected to be referred to the same *frame_id*.
 * LiDAR: a 3D point cloud ([sensor_msgs/PointCloud2](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud2.html)).
 
@@ -11,7 +11,7 @@ To start the calibration procedure, the reference point extraction nodes must be
 
 * Monocular: *mono_pattern.launch*. Arguments to be set:
     * *camera_name*: camera namespace in which the image topic and the meta-information topics exist.
-    * *image_topic*: name of the image topic excluding the camera namespace (e.g., *image_rect_color*).
+    * *image_topic*: name of the image topic excluding the camera namespace (e.g., *image_color*).
     * *frame_name*: *frame_id* to which camera topics are referred to.
 * Stereo: *stereo_pattern.launch*. Arguments to be set:
     * *camera_name*: camera namespace. Images of the stereo pair and meta-information topics should exist under *<camera_name>/left* and *<camera_name>/right*.
@@ -28,9 +28,9 @@ Apart from this, a third launch file must be run to perform the registration ste
     * *sensor1_id* and *sensor2_id*: to be set to 0 and 1, respectively, only if the two devices to be calibrated use the same modality.
 
 ## Examples ##
-For instance, if you want to calibrate a monocular camera delivering the topics */blackflys/image_rect_color* (rectified_image) and */blackflys/camera_info* (meta-information), both referred to the *blackflys* *frame_id*, and a LiDAR scanner providing a */hdl64_points* cloud, you should run the following commands in three separate terminals:
+For instance, if you want to calibrate a monocular camera delivering the topics */blackflys/image_color* (unrectified image) and */blackflys/camera_info* (meta-information), both referred to the *blackflys* *frame_id*, and a LiDAR scanner providing a */hdl64_points* cloud, you should run the following commands in three separate terminals:
 
-```roslaunch velo2cam_calibration mono_pattern.launch camera_name:=/blackflys image_topic:=image_rect_color frame_name:=blackflys```
+```roslaunch velo2cam_calibration mono_pattern.launch camera_name:=/blackflys image_topic:=image_color frame_name:=blackflys```
 
 ```roslaunch velo2cam_calibration lidar_pattern.launch cloud_topic:=/hdl64_points```
 

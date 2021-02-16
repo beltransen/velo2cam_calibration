@@ -1,9 +1,9 @@
 <launch>
 
     <arg name="stdout" default="screen" />
-    <arg name="camera_name" default="/stereo_camera/left" />
-    <arg name="image_topic" default="image_rect_color" />
-    <arg name="frame_name" default="stereo_camera" />
+    <arg name="camera_name" default="/mono_camera" />
+    <arg name="image_topic" default="image_color" />
+    <arg name="frame_name" default="mono_camera" />
     <arg name="sensor_id" default="0" />
 
     <!-- Marker size (side) in meters -->
