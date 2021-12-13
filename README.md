@@ -1,8 +1,8 @@
-# velo2cam_calibration [![Build Status](http://build.ros.org/job/Kdev__velo2cam_calibration__ubuntu_xenial_amd64/badge/icon)](http://build.ros.org/job/Kdev__velo2cam_calibration__ubuntu_xenial_amd64/)
+# velo2cam_calibration [![Build Status](https://build.ros.org/view/Ndev/job/Ndev__velo2cam_calibration__ubuntu_focal_amd64/badge/icon)](https://build.ros.org/view/Ndev/job/Ndev__velo2cam_calibration__ubuntu_focal_amd64/)
 
 The *velo2cam_calibration* software implements a state-of-the-art automatic calibration algorithm for pair of sensors composed of LiDAR and camera devices in any possible combination \[1\]. This software is provided as a ROS package.
 
-Package developed at [Intelligent Systems Laboratory](http://www.uc3m.es/islab), Universidad Carlos III de Madrid.
+Package co-developed by [Carlos Guindel](https://cguindel.github.io/)
 
 ![real results](screenshots/real_results.png)
 
