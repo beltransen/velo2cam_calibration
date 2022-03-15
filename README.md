@@ -1,13 +1,16 @@
 # velo2cam_calibration [![Build Status](https://build.ros.org/view/Ndev/job/Ndev__velo2cam_calibration__ubuntu_focal_amd64/badge/icon)](https://build.ros.org/view/Ndev/job/Ndev__velo2cam_calibration__ubuntu_focal_amd64/)
 
-The *velo2cam_calibration* software implements a state-of-the-art automatic calibration algorithm for pair of sensors composed of LiDAR and camera devices in any possible combination \[1\]. This software is provided as a ROS package.
+The *velo2cam_calibration* software implements a state-of-the-art automatic calibration algorithm for pair of sensors composed of LiDAR and camera devices in any possible combination, as described in this paper: 
 
-Package co-developed by [Carlos Guindel](https://cguindel.github.io/)
+**Automatic Extrinsic Calibration Method for LiDAR and Camera Sensor Setups**  
+[Jorge Beltrán](https://beltransen.github.io/), [Carlos Guindel](https://cguindel.github.io/), Arturo de la Escalera, Fernando García  
+IEEE Transactions on Intelligent Transportation Systems, 2022  
+**\[[Paper](https://ieeexplore.ieee.org/abstract/document/9733276)\] \[[Preprint](https://arxiv.org/abs/2101.04431)\]**
 
 ![real results](screenshots/real_results.png)
 
 ## Setup ##
-To install this ROS package:
+This software is provided as a ROS package. To install:
 1. Clone the repository into your *catkin_ws/src/* folder.
 2. Install run dependencies: ```sudo apt-get install ros-<distro>-opencv-apps```
 3. Build your workspace [as usual](http://wiki.ros.org/ROS/Tutorials/BuildingPackages).
@@ -27,8 +30,14 @@ The following picture shows a possible embodiment of the proposed calibration ta
 ## Citation ##
 If you use this work in your research, please consider citing the following paper:
 
-[1] Beltrán, J., Guindel, C., and García, F. (2021). [Automatic Extrinsic Calibration Method for LiDAR and Camera Sensor Setups](https://arxiv.org/abs/2101.04431). arXiv:2101.04431 [cs.RO]. Submitted to IEEE Transactions on Intelligent Transportation Systems.
+```
+@article{beltran2022,  
+  author={Beltrán, Jorge and Guindel, Carlos and de la Escalera, Arturo and García, Fernando},  
+  journal={IEEE Transactions on Intelligent Transportation Systems},   
+  title={Automatic Extrinsic Calibration Method for LiDAR and Camera Sensor Setups},   
+  year={2022}, 
+  doi={10.1109/TITS.2022.3155228}
+}
+```
 
-A previous version of this tool is available [here](https://github.com/beltransen/velo2cam_calibration/tree/v1.0) and was described on this paper: 
-
-[2] Guindel, C., Beltrán, J., Martín, D., and García, F. (2017).  [Automatic Extrinsic Calibration for Lidar-Stereo Vehicle Sensor Setup](https://arxiv.org/abs/1705.04085). *IEEE International Conference on Intelligent Transportation Systems (ITSC), 674–679*.
+A previous version of this tool is available [here](https://github.com/beltransen/velo2cam_calibration/tree/v1.0) and was described on this [paper](https://doi.org/10.1109/ITSC.2017.8317829). 
