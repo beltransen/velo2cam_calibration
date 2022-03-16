@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Beltrán"
+  given-names: "Jorge"
+  orcid: "https://orcid.org/0000-0001-5966-7641"
+- family-names: "Guindel"
+  given-names: "Carlos"
+  orcid: "https://orcid.org/0000-0003-1300-3879"
+title: "velo2cam_calibration"
+version: 2.0.0
+date-released: 2021-01-13
+url: "https://github.com/beltransen/velo2cam_calibration"
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Beltrán"
+    given-names: "Jorge"
+    orcid: "https://orcid.org/0000-0001-5966-7641"
+  - family-names: "Guindel"
+    given-names: "Carlos"
+    orcid: "https://orcid.org/0000-0003-1300-3879"
+  - family-names: "de la Escalera"
+    given-names: "Arturo"
+    orcid: "https://orcid.org/0000-0002-2618-857X"
+  - family-names: "García"
+    given-names: "Fernando"
+    orcid: "https://orcid.org/0000-0002-6291-5009"
+  doi: "10.1109/TITS.2022.3155228"
+  journal: "IEEE Transactions on Intelligent Transportation Systems"
+  title: "Automatic Extrinsic Calibration for Lidar-Stereo Vehicle Sensor Setups"
+  year: 2022
