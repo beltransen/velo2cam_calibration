@@ -126,3 +126,18 @@ target_link_libraries(v2c_disp_masker
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
 )
+
+#############
+## Install ##
+#############
+
+install(
+  TARGETS lidar_pattern stereo_pattern mono_qr_pattern velo2cam_calibration v2c_plane_segmentation v2c_disp_masker
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+install(DIRECTORY launch/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
+  FILES_MATCHING PATTERN "*.launch"
+)
